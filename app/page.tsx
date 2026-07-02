@@ -7,6 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ExerciseCard } from '@/components/exercise-card'
+import {
+  type PainMode,
+  type PhaseId,
+  nextPainMode,
+  resolvePhaseForMode,
+  isPhaseAllowed,
+  checklistProgress,
+  estimateDuration,
+  todayKey,
+  parseDailyState,
+  serializeDailyState,
+  DAILY_STATE_STORAGE_KEY,
+} from '@/lib/training-logic'
 
 // Exercise data with full content from specs
 const phase1Exercises = [
@@ -144,14 +157,30 @@ const checklistItems = [
   'Terminé sin quedar peor',
 ]
 
-type PainMode = 'normal' | 'hurts-more' | 'feeling-better'
-
 export default function HomePage() {
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({})
   const [exercisesDone, setExercisesDone] = useState<Record<string, boolean>>({})
   const [painMode, setPainMode] = useState<PainMode>('normal')
-  const [activePhase, setActivePhase] = useState('fase1')
+  const [activePhase, setActivePhase] = useState<PhaseId>('fase1')
+  const [hydrated, setHydrated] = useState(false)
+
+  // Restaurar el registro del día desde localStorage (se resetea cada día nuevo)
+  useEffect(() => {
+    const state = parseDailyState(localStorage.getItem(DAILY_STATE_STORAGE_KEY), todayKey())
+    setCheckedItems(state.checkedItems)
+    setExercisesDone(state.exercisesDone)
+    setHydrated(true)
+  }, [])
+
+  // Guardar el registro del día en cada cambio
+  useEffect(() => {
+    if (!hydrated) return
+    localStorage.setItem(
+      DAILY_STATE_STORAGE_KEY,
+      serializeDailyState({ date: todayKey(), checkedItems, exercisesDone }),
+    )
+  }, [hydrated, checkedItems, exercisesDone])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -173,7 +202,7 @@ export default function HomePage() {
     setExercisesDone(prev => ({ ...prev, [name]: done }))
   }
 
-  const completedChecklistCount = Object.values(checkedItems).filter(Boolean).length
+  const progress = checklistProgress(checkedItems, checklistItems)
 
   const markAllComplete = () => {
     const allChecked: Record<string, boolean> = {}
@@ -185,21 +214,16 @@ export default function HomePage() {
     setCheckedItems({})
   }
 
-  const handlePainMode = (mode: PainMode) => {
+  const handlePainMode = (clicked: Exclude<PainMode, 'normal'>) => {
+    const mode = nextPainMode(painMode, clicked)
     setPainMode(mode)
-    if (mode === 'hurts-more') {
-      setActivePhase('fase1')
-    } else if (mode === 'feeling-better') {
-      setActivePhase('fase2')
-    }
+    setActivePhase(resolvePhaseForMode(mode, activePhase))
   }
 
-  // Estimated duration based on phase
-  const estimatedDuration = useMemo(() => {
-    if (painMode === 'hurts-more' || activePhase === 'fase1') return '8-12 min'
-    if (activePhase === 'fase2') return '15-20 min'
-    return '20-30 min'
-  }, [painMode, activePhase])
+  const estimatedDuration = useMemo(
+    () => estimateDuration(painMode, activePhase),
+    [painMode, activePhase],
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -347,7 +371,7 @@ export default function HomePage() {
             Fases del tratamiento
           </h2>
           
-          <Tabs value={activePhase} onValueChange={setActivePhase} className="w-full">
+          <Tabs value={activePhase} onValueChange={(value) => setActivePhase(value as PhaseId)} className="w-full">
             <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-secondary/50">
               <TabsTrigger 
                 value="fase1" 
@@ -356,16 +380,16 @@ export default function HomePage() {
                 <span className="hidden sm:inline">Fase 1: </span>Calmar
               </TabsTrigger>
               <TabsTrigger 
-                value="fase2" 
+                value="fase2"
                 className="text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                disabled={painMode === 'hurts-more'}
+                disabled={!isPhaseAllowed(painMode, 'fase2')}
               >
                 <span className="hidden sm:inline">Fase 2: </span>Fortalecer
               </TabsTrigger>
               <TabsTrigger 
-                value="fase3" 
+                value="fase3"
                 className="text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                disabled={painMode === 'hurts-more'}
+                disabled={!isPhaseAllowed(painMode, 'fase3')}
               >
                 <span className="hidden sm:inline">Fase 3: </span>Mantener
               </TabsTrigger>
@@ -496,12 +520,12 @@ export default function HomePage() {
               {/* Progress */}
               <div className="p-4 rounded-lg bg-secondary/30 mb-4">
                 <p className="text-center text-foreground font-medium">
-                  Hoy completaste {completedChecklistCount} de {checklistItems.length}
+                  Hoy completaste {progress.completed} de {progress.total}
                 </p>
                 <div className="w-full bg-secondary rounded-full h-2 mt-2">
-                  <div 
+                  <div
                     className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${(completedChecklistCount / checklistItems.length) * 100}%` }}
+                    style={{ width: `${progress.percent}%` }}
                   />
                 </div>
               </div>

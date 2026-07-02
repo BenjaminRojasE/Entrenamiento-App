@@ -6,6 +6,7 @@ import { Play, CheckCircle2, XCircle, Lightbulb, TrendingUp, ChevronDown, Chevro
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/lib/youtube'
 
 interface ExerciseCardProps {
   name: string
@@ -21,30 +22,6 @@ interface ExerciseCardProps {
   progression?: string
   onToggleDone?: (done: boolean) => void
   isDone?: boolean
-}
-
-function getYouTubeEmbedUrl(url: string): string {
-  const shortMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/)
-  const watchMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)
-  
-  if (shortMatch) {
-    return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1`
-  }
-  if (watchMatch) {
-    return `https://www.youtube.com/embed/${watchMatch[1]}?autoplay=1`
-  }
-  return url
-}
-
-function getYouTubeThumbnail(url: string): string {
-  const shortMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/)
-  const watchMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)
-  
-  const videoId = shortMatch?.[1] || watchMatch?.[1]
-  if (videoId) {
-    return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
-  }
-  return ''
 }
 
 export function ExerciseCard({
