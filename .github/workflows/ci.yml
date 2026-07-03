@@ -35,7 +35,7 @@ jobs:
       - name: Instalar navegador de Playwright
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Tests E2E (Playwright)
+      - name: Tests E2E y accesibilidad (Playwright + axe-core)
         run: pnpm test:e2e
 
       - name: Subir reporte de Playwright si falla

@@ -167,7 +167,8 @@ export function ExerciseCard({
               variant="ghost"
               size="sm"
               onClick={() => setShowDetails(!showDetails)}
-              className="w-full justify-between text-muted-foreground hover:text-foreground"
+              aria-expanded={showDetails}
+              className="w-full justify-between text-muted-foreground hover:text-accent-foreground"
             >
               <span>Ver más detalles</span>
               {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

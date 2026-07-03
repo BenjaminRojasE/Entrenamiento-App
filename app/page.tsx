@@ -242,7 +242,7 @@ export default function HomePage() {
             variant="ghost"
             size="sm"
             onClick={scrollToTop}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-accent-foreground"
           >
             <ArrowUp className="h-4 w-4" />
             <span className="sr-only">Volver arriba</span>
@@ -298,7 +298,7 @@ export default function HomePage() {
                     size="sm"
                     variant={painMode === 'hurts-more' ? 'default' : 'outline'}
                     onClick={() => handlePainMode('hurts-more')}
-                    className={`text-sm ${painMode === 'hurts-more' ? 'bg-danger hover:bg-danger/90 text-white' : 'border-danger/50 text-danger hover:bg-danger/10'}`}
+                    className={`text-sm ${painMode === 'hurts-more' ? 'bg-destructive hover:bg-destructive/90 text-white' : 'border-danger/50 text-danger hover:text-danger hover:bg-danger/10'}`}
                   >
                     <Minus className="h-4 w-4 mr-1" />
                     Hoy me duele más
@@ -307,7 +307,7 @@ export default function HomePage() {
                     size="sm"
                     variant={painMode === 'feeling-better' ? 'default' : 'outline'}
                     onClick={() => handlePainMode('feeling-better')}
-                    className={`text-sm ${painMode === 'feeling-better' ? 'bg-success hover:bg-success/90 text-white' : 'border-success/50 text-success hover:bg-success/10'}`}
+                    className={`text-sm ${painMode === 'feeling-better' ? 'bg-success hover:bg-success/90 text-primary-foreground' : 'border-success/50 text-success hover:text-success hover:bg-success/10'}`}
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Hoy ando mejor
@@ -340,23 +340,23 @@ export default function HomePage() {
             <CardContent>
               <ul className="space-y-3 text-foreground">
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Molestia tolerable puede ser aceptable.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Si queda mucho peor después, bajar dosis.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Si aparece dolor eléctrico a la pierna, debilidad nueva, fiebre o síntomas raros, suspender y consultar.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Mejor poquito todos los días que mucho de golpe.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Evitar sentarse en superficies muy bajas si eso te irrita.</span>
                 </li>
               </ul>
@@ -466,19 +466,19 @@ export default function HomePage() {
             <CardContent>
               <ul className="space-y-3 text-foreground">
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Cuando levantarse de la silla o del baño sea más llevadero.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Cuando la caminata moleste menos al inicio.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Cuando la fase actual no empeore el dolor después.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-primary text-lg leading-none mt-0.5">•</span>
+                  <span aria-hidden="true" className="text-primary text-lg leading-none mt-0.5">•</span>
                   <span className="text-base leading-relaxed">Cuando el cuerpo tolere mejor la carga diaria.</span>
                 </li>
               </ul>
@@ -522,7 +522,14 @@ export default function HomePage() {
                 <p className="text-center text-foreground font-medium">
                   Hoy completaste {progress.completed} de {progress.total}
                 </p>
-                <div className="w-full bg-secondary rounded-full h-2 mt-2">
+                <div
+                  role="progressbar"
+                  aria-label="Progreso del checklist diario"
+                  aria-valuenow={progress.completed}
+                  aria-valuemin={0}
+                  aria-valuemax={progress.total}
+                  className="w-full bg-secondary rounded-full h-2 mt-2"
+                >
                   <div
                     className="bg-primary h-2 rounded-full transition-all duration-300"
                     style={{ width: `${progress.percent}%` }}
@@ -565,7 +572,7 @@ export default function HomePage() {
             <CardContent className="space-y-4">
               <div className="rounded-lg bg-success/10 p-4 border border-success/30">
                 <div className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-success shrink-0 mt-0.5" />
+                  <div aria-hidden="true" className="h-6 w-6 rounded-full bg-success shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-success mb-1">Verde: Todo bien</h4>
                     <p className="text-foreground/90 text-sm leading-relaxed">
@@ -577,7 +584,7 @@ export default function HomePage() {
               
               <div className="rounded-lg bg-warning/10 p-4 border border-warning/30">
                 <div className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-warning shrink-0 mt-0.5" />
+                  <div aria-hidden="true" className="h-6 w-6 rounded-full bg-warning shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-warning mb-1">Amarillo: Ojo, con cuidado</h4>
                     <p className="text-foreground/90 text-sm leading-relaxed">
@@ -589,7 +596,7 @@ export default function HomePage() {
               
               <div className="rounded-lg bg-danger/10 p-4 border border-danger/30">
                 <div className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-danger shrink-0 mt-0.5" />
+                  <div aria-hidden="true" className="h-6 w-6 rounded-full bg-danger shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-danger mb-1">Rojo: Parar</h4>
                     <p className="text-foreground/90 text-sm leading-relaxed">
@@ -614,23 +621,23 @@ export default function HomePage() {
             <CardContent>
               <ul className="space-y-3 text-foreground">
                 <li className="flex items-start gap-3">
-                  <span className="text-danger text-lg leading-none mt-0.5">✕</span>
+                  <span aria-hidden="true" className="text-danger text-lg leading-none mt-0.5">✕</span>
                   <span className="text-base leading-relaxed">Sentarse en baño muy bajo sin apoyo.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-danger text-lg leading-none mt-0.5">✕</span>
+                  <span aria-hidden="true" className="text-danger text-lg leading-none mt-0.5">✕</span>
                   <span className="text-base leading-relaxed">Cruzar piernas por mucho rato.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-danger text-lg leading-none mt-0.5">✕</span>
+                  <span aria-hidden="true" className="text-danger text-lg leading-none mt-0.5">✕</span>
                   <span className="text-base leading-relaxed">Quedarse quieta todo el día por miedo.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-danger text-lg leading-none mt-0.5">✕</span>
+                  <span aria-hidden="true" className="text-danger text-lg leading-none mt-0.5">✕</span>
                   <span className="text-base leading-relaxed">Agacharse redondeando la espalda para todo.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-danger text-lg leading-none mt-0.5">✕</span>
+                  <span aria-hidden="true" className="text-danger text-lg leading-none mt-0.5">✕</span>
                   <span className="text-base leading-relaxed">Hacer estiramientos agresivos si ese día está muy sensible.</span>
                 </li>
               </ul>
@@ -656,7 +663,7 @@ export default function HomePage() {
                 {/* Zumba */}
                 <div className="rounded-lg bg-secondary/40 p-4 border border-border/50">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
+                    <div aria-hidden="true" className="h-8 w-8 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
                       <span className="text-warning font-bold text-sm">Z</span>
                     </div>
                     <div>
@@ -671,7 +678,7 @@ export default function HomePage() {
                 {/* Funcional */}
                 <div className="rounded-lg bg-secondary/40 p-4 border border-border/50">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
+                    <div aria-hidden="true" className="h-8 w-8 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
                       <span className="text-warning font-bold text-sm">F</span>
                     </div>
                     <div>
@@ -686,7 +693,7 @@ export default function HomePage() {
                 {/* Corridas / trote */}
                 <div className="rounded-lg bg-secondary/40 p-4 border border-border/50">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-danger/20 flex items-center justify-center shrink-0">
+                    <div aria-hidden="true" className="h-8 w-8 rounded-full bg-danger/20 flex items-center justify-center shrink-0">
                       <span className="text-danger font-bold text-sm">C</span>
                     </div>
                     <div>
@@ -701,7 +708,7 @@ export default function HomePage() {
                 {/* Caminata */}
                 <div className="rounded-lg bg-secondary/40 p-4 border border-border/50">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center shrink-0">
+                    <div aria-hidden="true" className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center shrink-0">
                       <span className="text-success font-bold text-sm">Ca</span>
                     </div>
                     <div>

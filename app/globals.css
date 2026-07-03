@@ -41,7 +41,9 @@
   /* Custom colors for traffic light */
   --success: oklch(0.72 0.18 145);
   --warning: oklch(0.80 0.18 85);
-  --danger: oklch(0.60 0.22 25);
+  /* Luminosidad mínima para contraste AA (>= 4.5:1) del texto danger
+     sobre los fondos oscuros de la app (bg, card, danger/10) */
+  --danger: oklch(0.66 0.22 25);
 }
 
 @theme inline {

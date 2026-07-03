@@ -51,6 +51,12 @@ al DOM o que la hidratación de localStorage rompe el render.
 [BUGS.md](BUGS.md) (severidad, pasos, esperado vs. actual) antes de tocar el código, y el
 estado original quedó preservado como primer commit del repo para trazabilidad.
 
+**5. Accesibilidad como requisito, no como extra.** La usuaria es una adulta mayor con dolor
+físico, así que se auditó WCAG 2.1 nivel AA con axe-core sobre los mismos flujos críticos:
+14 tests en [`tests/e2e/accesibilidad.spec.ts`](tests/e2e/accesibilidad.spec.ts) escanean 7
+estados de la app y verifican contraste, touch targets, zoom, reflow a 320 px, teclado y textos
+alternativos. Hallazgos y fixes en [ACCESSIBILITY_REPORT.md](ACCESSIBILITY_REPORT.md).
+
 ## Bugs encontrados y corregidos
 
 Detalle completo con pasos de reproducción en [BUGS.md](BUGS.md).
@@ -63,7 +69,10 @@ Detalle completo con pasos de reproducción en [BUGS.md](BUGS.md).
 | BUG-005 | Media | El viewport bloqueaba el pinch-zoom (`user-scalable=no`) — crítico en una app de salud (WCAG 1.4.4). | Revisión manual |
 | BUG-004 | Baja | `ignoreBuildErrors: true` ocultaba errores de TypeScript en el build de producción. | `typecheck` + build en CI |
 
-**Resultado final: 47/47 tests en verde** (37 unitarios + 10 E2E) con los cinco fixes aplicados.
+**Resultado final: 61/61 tests en verde** (37 unitarios + 10 E2E de flujos + 14 de
+accesibilidad) con los cinco fixes aplicados. La auditoría de accesibilidad posterior encontró
+y corrigió además 8 violaciones WCAG 2.1 AA (detalle en
+[ACCESSIBILITY_REPORT.md](ACCESSIBILITY_REPORT.md)).
 
 ## CI/CD
 
@@ -72,7 +81,8 @@ Detalle completo con pasos de reproducción en [BUGS.md](BUGS.md).
 1. **Typecheck** (`tsc --noEmit`) — los errores de tipos ya no pueden pasar desapercibidos.
 2. **Tests unitarios** (Vitest).
 3. **Build de producción** (Next.js con validación de TypeScript activada).
-4. **Tests E2E** (Playwright + Chromium contra la app levantada).
+4. **Tests E2E y de accesibilidad** (Playwright + Chromium contra la app levantada,
+   incluidos los escaneos WCAG 2.1 AA con axe-core).
 5. Si algo falla, el **reporte HTML de Playwright** se sube como artifact para diagnóstico.
 
 ## Cómo correr todo localmente
@@ -86,6 +96,7 @@ pnpm exec playwright install chromium   # una sola vez
 pnpm dev          # app en desarrollo
 pnpm test:unit    # unitarios (pnpm test:unit:watch en desarrollo)
 pnpm test:e2e     # E2E — levanta next dev en el puerto 3100 por sí solo
+pnpm test:a11y    # solo la suite de accesibilidad (axe-core)
 pnpm test         # suite completa
 pnpm typecheck    # solo tipos
 pnpm build        # build de producción
@@ -97,5 +108,7 @@ Nota: los E2E usan el puerto **3100** para no chocar con otros servicios locales
 
 - [TEST_PLAN.md](TEST_PLAN.md) — plan de pruebas: casos, prioridades y tipo (unitario vs E2E).
 - [BUGS.md](BUGS.md) — los 5 bugs con severidad, reproducción y verificación post-fix.
+- [ACCESSIBILITY_REPORT.md](ACCESSIBILITY_REPORT.md) — auditoría WCAG 2.1 AA: violaciones,
+  fixes aplicados y observaciones que requieren decisión de diseño.
 - [PROGRESS.md](PROGRESS.md) — bitácora de la auditoría, incluidas decisiones e incidentes
   (p. ej., la primera corrida E2E que falló por un conflicto de puerto con otra app local).
